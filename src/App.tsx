@@ -11,6 +11,7 @@ import ApplicationsPage from './pages/ApplicationsPage';
 import ApplicationDetailsPage from './pages/ApplicationDetailsPage';
 import ApplicationEditPage from './pages/ApplicationEditPage';
 import DonatePage from './pages/DonatePage';
+import DonateSuccessPage from './pages/DonateSuccessPage';
 
 function App() {
   return (
@@ -25,11 +26,10 @@ function App() {
             <Route path="/applications/:id" element={<ApplicationDetailsPage />} />
             <Route path="/applications/:id/edit" element={<ApplicationEditPage />} />
             <Route path="/donate" element={<DonatePage />} />
+            <Route path="/donate/success" element={<DonateSuccessPage />} />
           </Routes>
         </Router>
       </ApplicationProvider>
     </AuthProvider>
   );
 }
-
-export default App;
