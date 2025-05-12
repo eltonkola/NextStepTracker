@@ -12,6 +12,9 @@ import ApplicationDetailsPage from './pages/ApplicationDetailsPage';
 import ApplicationEditPage from './pages/ApplicationEditPage';
 import DonatePage from './pages/DonatePage';
 import DonateSuccessPage from './pages/DonateSuccessPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import TermsOfServicePage from './pages/TermsOfServicePage';
+import ContactPage from './pages/ContactPage';
 
 function App() {
   return (
@@ -27,6 +30,9 @@ function App() {
             <Route path="/applications/:id/edit" element={<ApplicationEditPage />} />
             <Route path="/donate" element={<DonatePage />} />
             <Route path="/donate/success" element={<DonateSuccessPage />} />
+            <Route path="/privacy" element={<PrivacyPolicyPage />} />
+            <Route path="/terms" element={<TermsOfServicePage />} />
+            <Route path="/contact" element={<ContactPage />} />
           </Routes>
         </Router>
       </ApplicationProvider>
@@ -34,4 +40,4 @@ function App() {
   );
 }
 
-export default App
+export default App;
