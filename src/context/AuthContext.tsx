@@ -1,13 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { User, UserStatus } from '../types';
+import { User } from '../types';
+import { supabase } from '../lib/supabase';
 
 interface AuthContextType {
   user: User | null;
-  status: UserStatus;
+  status: 'authenticated' | 'unauthenticated' | 'loading';
   login: (email: string, password: string) => Promise<boolean>;
   register: (name: string, email: string, password: string) => Promise<boolean>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -22,94 +22,99 @@ export const useAuth = () => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [status, setStatus] = useState<UserStatus>('unauthenticated');
+  const [status, setStatus] = useState<'authenticated' | 'unauthenticated' | 'loading'>('loading');
 
   useEffect(() => {
-    // Check if user is already logged in
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
+    // Check active session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        setUser({
+          id: session.user.id,
+          email: session.user.email!,
+          name: session.user.user_metadata.name || ''
+        });
         setStatus('authenticated');
-      } catch (error) {
-        console.error('Failed to parse stored user:', error);
-        localStorage.removeItem('user');
+      } else {
+        setStatus('unauthenticated');
       }
-    }
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        setUser({
+          id: session.user.id,
+          email: session.user.email!,
+          name: session.user.user_metadata.name || ''
+        });
+        setStatus('authenticated');
+      } else {
+        setUser(null);
+        setStatus('unauthenticated');
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    // Simulate API call
-    // In a real app, this would be an actual API call to verify credentials
     try {
-      // For demo, we'll fetch from localStorage
-      const usersJson = localStorage.getItem('users');
-      
-      if (!usersJson) {
-        return false;
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) {
+        throw error;
       }
-      
-      const users = JSON.parse(usersJson);
-      const foundUser = users.find((u: any) => 
-        u.email === email && u.password === password
-      );
-      
-      if (foundUser) {
-        const { password, ...userWithoutPassword } = foundUser;
-        setUser(userWithoutPassword);
-        setStatus('authenticated');
-        localStorage.setItem('user', JSON.stringify(userWithoutPassword));
-        return true;
-      }
-      
-      return false;
+
+      return true;
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error('Login error:', error);
       return false;
     }
   };
 
   const register = async (name: string, email: string, password: string): Promise<boolean> => {
-    // Simulate API call
-    // In a real app, this would be an actual API call to create user
     try {
-      // For demo, we'll store in localStorage
-      const usersJson = localStorage.getItem('users');
-      const users = usersJson ? JSON.parse(usersJson) : [];
-      
-      // Check if user with this email already exists
-      if (users.some((u: any) => u.email === email)) {
-        return false;
-      }
-      
-      const newUser = {
-        id: uuidv4(),
-        name,
+      const { data, error } = await supabase.auth.signUp({
         email,
-        password // In a real app, this would be hashed
-      };
-      
-      users.push(newUser);
-      localStorage.setItem('users', JSON.stringify(users));
-      
-      // Log user in
-      const { password: _, ...userWithoutPassword } = newUser;
-      setUser(userWithoutPassword);
-      setStatus('authenticated');
-      localStorage.setItem('user', JSON.stringify(userWithoutPassword));
-      
+        password,
+        options: {
+          data: {
+            name
+          }
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      // Create profile
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert([{ id: data.user!.id, name, email }]);
+
+      if (profileError) {
+        throw profileError;
+      }
+
       return true;
     } catch (error) {
-      console.error('Registration failed:', error);
+      console.error('Registration error:', error);
       return false;
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    setStatus('unauthenticated');
-    localStorage.removeItem('user');
+  const logout = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   return (

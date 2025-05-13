@@ -1,17 +1,17 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import { JobApplication, ApplicationStatus, ApplicationStep } from '../types';
 import { useAuth } from './AuthContext';
+import { supabase } from '../lib/supabase';
 
 interface ApplicationContextType {
   applications: JobApplication[];
-  addApplication: (application: Omit<JobApplication, 'id' | 'steps'>) => void;
-  updateApplication: (application: JobApplication) => void;
-  deleteApplication: (id: string) => void;
-  addApplicationStep: (applicationId: string, step: Omit<ApplicationStep, 'id'>) => void;
-  updateApplicationStep: (applicationId: string, step: ApplicationStep) => void;
-  deleteApplicationStep: (applicationId: string, stepId: string) => void;
-  toggleFavorite: (id: string) => void;
+  addApplication: (application: Omit<JobApplication, 'id' | 'steps'>) => Promise<void>;
+  updateApplication: (application: JobApplication) => Promise<void>;
+  deleteApplication: (id: string) => Promise<void>;
+  addApplicationStep: (applicationId: string, step: Omit<ApplicationStep, 'id'>) => Promise<void>;
+  updateApplicationStep: (applicationId: string, step: ApplicationStep) => Promise<void>;
+  deleteApplicationStep: (applicationId: string, stepId: string) => Promise<void>;
+  toggleFavorite: (id: string) => Promise<void>;
 }
 
 const ApplicationContext = createContext<ApplicationContextType | null>(null);
@@ -28,136 +28,207 @@ export const ApplicationProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [applications, setApplications] = useState<JobApplication[]>([]);
   const { user } = useAuth();
 
-  // Load applications from localStorage when user changes
+  // Load applications from Supabase when user changes
   useEffect(() => {
     if (user) {
-      const userApps = localStorage.getItem(`applications-${user.id}`);
-      if (userApps) {
-        try {
-          setApplications(JSON.parse(userApps));
-        } catch (error) {
-          console.error('Failed to parse stored applications:', error);
-        }
-      }
+      loadApplications();
     } else {
       setApplications([]);
     }
   }, [user]);
 
-  // Save applications to localStorage whenever they change
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem(`applications-${user.id}`, JSON.stringify(applications));
+  const loadApplications = async () => {
+    try {
+      // Fetch applications with their steps
+      const { data: apps, error } = await supabase
+        .from('applications')
+        .select(`
+          *,
+          application_steps (*)
+        `)
+        .eq('profile_id', user!.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        throw error;
+      }
+
+      // Transform the data to match our JobApplication type
+      const transformedApps: JobApplication[] = apps.map(app => ({
+        id: app.id,
+        company: app.company,
+        position: app.position,
+        salary: app.salary || '',
+        location: app.location || '',
+        dateApplied: app.date_applied,
+        notes: app.notes || '',
+        favorite: app.favorite || false,
+        steps: app.application_steps.map((step: any) => ({
+          id: step.id,
+          date: step.date,
+          status: step.status as ApplicationStatus,
+          contactPerson: step.contact_person || '',
+          notes: step.notes || ''
+        })),
+        currentStatus: app.application_steps[0]?.status || 'applied'
+      }));
+
+      setApplications(transformedApps);
+    } catch (error) {
+      console.error('Error loading applications:', error);
     }
-  }, [applications, user]);
-
-  const addApplication = (applicationData: Omit<JobApplication, 'id' | 'steps'>) => {
-    const newApplication: JobApplication = {
-      ...applicationData,
-      id: uuidv4(),
-      steps: [{
-        id: uuidv4(),
-        date: applicationData.dateApplied,
-        contactPerson: '',
-        notes: applicationData.notes || 'Initial application submitted',
-        status: 'applied'
-      }],
-    };
-    
-    setApplications(prev => [newApplication, ...prev]);
   };
 
-  const updateApplication = (updatedApplication: JobApplication) => {
-    setApplications(prev => 
-      prev.map(app => 
-        app.id === updatedApplication.id ? updatedApplication : app
-      )
-    );
+  const addApplication = async (applicationData: Omit<JobApplication, 'id' | 'steps'>) => {
+    try {
+      // Insert the application
+      const { data: newApp, error: appError } = await supabase
+        .from('applications')
+        .insert([{
+          profile_id: user!.id,
+          company: applicationData.company,
+          position: applicationData.position,
+          salary: applicationData.salary,
+          location: applicationData.location,
+          date_applied: applicationData.dateApplied,
+          notes: applicationData.notes,
+          favorite: applicationData.favorite
+        }])
+        .select()
+        .single();
+
+      if (appError) throw appError;
+
+      // Insert the initial step
+      const { error: stepError } = await supabase
+        .from('application_steps')
+        .insert([{
+          application_id: newApp.id,
+          date: applicationData.dateApplied,
+          status: 'applied',
+          notes: applicationData.notes || 'Initial application submitted'
+        }]);
+
+      if (stepError) throw stepError;
+
+      // Reload applications to get the latest data
+      await loadApplications();
+    } catch (error) {
+      console.error('Error adding application:', error);
+    }
   };
 
-  const deleteApplication = (id: string) => {
-    setApplications(prev => prev.filter(app => app.id !== id));
+  const updateApplication = async (updatedApplication: JobApplication) => {
+    try {
+      const { error } = await supabase
+        .from('applications')
+        .update({
+          company: updatedApplication.company,
+          position: updatedApplication.position,
+          salary: updatedApplication.salary,
+          location: updatedApplication.location,
+          date_applied: updatedApplication.dateApplied,
+          notes: updatedApplication.notes,
+          favorite: updatedApplication.favorite
+        })
+        .eq('id', updatedApplication.id);
+
+      if (error) throw error;
+
+      await loadApplications();
+    } catch (error) {
+      console.error('Error updating application:', error);
+    }
   };
 
-  const addApplicationStep = (applicationId: string, stepData: Omit<ApplicationStep, 'id'>) => {
-    const newStep: ApplicationStep = {
-      ...stepData,
-      id: uuidv4(),
-    };
-    
-    setApplications(prev => 
-      prev.map(app => {
-        if (app.id === applicationId) {
-          // Add the new step and update the current status
-          return {
-            ...app,
-            steps: [...app.steps, newStep],
-            currentStatus: stepData.status
-          };
-        }
-        return app;
-      })
-    );
+  const deleteApplication = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('applications')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      await loadApplications();
+    } catch (error) {
+      console.error('Error deleting application:', error);
+    }
   };
 
-  const updateApplicationStep = (applicationId: string, updatedStep: ApplicationStep) => {
-    setApplications(prev => 
-      prev.map(app => {
-        if (app.id === applicationId) {
-          // If this is the last step, also update the application's current status
-          const updatedSteps = app.steps.map(step => 
-            step.id === updatedStep.id ? updatedStep : step
-          );
-          
-          // Sort steps by date (newest first) to determine current status
-          const sortedSteps = [...updatedSteps].sort((a, b) => 
-            new Date(b.date).getTime() - new Date(a.date).getTime()
-          );
-          
-          return {
-            ...app,
-            steps: updatedSteps,
-            currentStatus: sortedSteps[0]?.status || app.currentStatus
-          };
-        }
-        return app;
-      })
-    );
+  const addApplicationStep = async (applicationId: string, stepData: Omit<ApplicationStep, 'id'>) => {
+    try {
+      const { error } = await supabase
+        .from('application_steps')
+        .insert([{
+          application_id: applicationId,
+          date: stepData.date,
+          status: stepData.status,
+          contact_person: stepData.contactPerson,
+          notes: stepData.notes
+        }]);
+
+      if (error) throw error;
+
+      await loadApplications();
+    } catch (error) {
+      console.error('Error adding application step:', error);
+    }
   };
 
-  const deleteApplicationStep = (applicationId: string, stepId: string) => {
-    setApplications(prev => 
-      prev.map(app => {
-        if (app.id === applicationId) {
-          // Don't allow deleting if it's the only step
-          if (app.steps.length <= 1) {
-            return app;
-          }
-          
-          const updatedSteps = app.steps.filter(step => step.id !== stepId);
-          
-          // Recalculate current status from the newest remaining step
-          const sortedSteps = [...updatedSteps].sort((a, b) => 
-            new Date(b.date).getTime() - new Date(a.date).getTime()
-          );
-          
-          return {
-            ...app,
-            steps: updatedSteps,
-            currentStatus: sortedSteps[0]?.status || 'applied'
-          };
-        }
-        return app;
-      })
-    );
+  const updateApplicationStep = async (applicationId: string, updatedStep: ApplicationStep) => {
+    try {
+      const { error } = await supabase
+        .from('application_steps')
+        .update({
+          date: updatedStep.date,
+          status: updatedStep.status,
+          contact_person: updatedStep.contactPerson,
+          notes: updatedStep.notes
+        })
+        .eq('id', updatedStep.id)
+        .eq('application_id', applicationId);
+
+      if (error) throw error;
+
+      await loadApplications();
+    } catch (error) {
+      console.error('Error updating application step:', error);
+    }
   };
 
-  const toggleFavorite = (id: string) => {
-    setApplications(prev => 
-      prev.map(app => 
-        app.id === id ? { ...app, favorite: !app.favorite } : app
-      )
-    );
+  const deleteApplicationStep = async (applicationId: string, stepId: string) => {
+    try {
+      const { error } = await supabase
+        .from('application_steps')
+        .delete()
+        .eq('id', stepId)
+        .eq('application_id', applicationId);
+
+      if (error) throw error;
+
+      await loadApplications();
+    } catch (error) {
+      console.error('Error deleting application step:', error);
+    }
+  };
+
+  const toggleFavorite = async (id: string) => {
+    try {
+      const application = applications.find(app => app.id === id);
+      if (!application) return;
+
+      const { error } = await supabase
+        .from('applications')
+        .update({ favorite: !application.favorite })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      await loadApplications();
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+    }
   };
 
   return (
