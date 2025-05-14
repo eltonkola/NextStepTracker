@@ -16,12 +16,11 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSubmit, onCancel })
     salary: '',
     location: '',
     dateApplied: format(new Date(), 'yyyy-MM-dd'),
-    currentStatus: 'applied',
     notes: '',
     favorite: false
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
@@ -31,7 +30,7 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSubmit, onCancel })
     setLoading(true);
     
     try {
-      addApplication(formData);
+      await addApplication(formData);
       onSubmit();
     } catch (error) {
       console.error('Error adding application:', error);
@@ -119,26 +118,6 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSubmit, onCancel })
               onChange={handleChange}
               required
             />
-          </div>
-          
-          <div>
-            <label htmlFor="currentStatus" className="form-label">
-              Status *
-            </label>
-            <select
-              id="currentStatus"
-              name="currentStatus"
-              className="form-select"
-              value={formData.currentStatus}
-              onChange={handleChange}
-              required
-            >
-              <option value="applied">Applied</option>
-              <option value="screening">Screening</option>
-              <option value="progress">In Progress</option>
-              <option value="offer">Offer</option>
-              <option value="rejected">Rejected</option>
-            </select>
           </div>
         </div>
         

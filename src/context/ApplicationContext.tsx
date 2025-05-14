@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase';
 
 interface ApplicationContextType {
   applications: JobApplication[];
-  addApplication: (application: Omit<JobApplication, 'id' | 'steps'>) => Promise<void>;
+  addApplication: (application: Omit<JobApplication, 'id' | 'steps' | 'currentStatus'>) => Promise<void>;
   updateApplication: (application: JobApplication) => Promise<void>;
   deleteApplication: (id: string) => Promise<void>;
   addApplicationStep: (applicationId: string, step: Omit<ApplicationStep, 'id'>) => Promise<void>;
@@ -28,7 +28,6 @@ export const ApplicationProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [applications, setApplications] = useState<JobApplication[]>([]);
   const { user } = useAuth();
 
-  // Load applications from Supabase when user changes
   useEffect(() => {
     if (user) {
       loadApplications();
@@ -39,7 +38,6 @@ export const ApplicationProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   const loadApplications = async () => {
     try {
-      // Fetch applications with their steps
       const { data: apps, error } = await supabase
         .from('applications')
         .select(`
@@ -53,25 +51,30 @@ export const ApplicationProvider: React.FC<{ children: React.ReactNode }> = ({ c
         throw error;
       }
 
-      // Transform the data to match our JobApplication type
-      const transformedApps: JobApplication[] = apps.map(app => ({
-        id: app.id,
-        company: app.company,
-        position: app.position,
-        salary: app.salary || '',
-        location: app.location || '',
-        dateApplied: app.date_applied,
-        notes: app.notes || '',
-        favorite: app.favorite || false,
-        steps: app.application_steps.map((step: any) => ({
-          id: step.id,
-          date: step.date,
-          status: step.status as ApplicationStatus,
-          contactPerson: step.contact_person || '',
-          notes: step.notes || ''
-        })),
-        currentStatus: app.application_steps[0]?.status || 'applied'
-      }));
+      const transformedApps: JobApplication[] = apps.map(app => {
+        const sortedSteps = app.application_steps.sort((a: any, b: any) => 
+          new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+
+        return {
+          id: app.id,
+          company: app.company,
+          position: app.position,
+          salary: app.salary || '',
+          location: app.location || '',
+          dateApplied: app.date_applied,
+          notes: app.notes || '',
+          favorite: app.favorite || false,
+          steps: sortedSteps.map((step: any) => ({
+            id: step.id,
+            date: step.date,
+            status: step.status as ApplicationStatus,
+            contactPerson: step.contact_person || '',
+            notes: step.notes || ''
+          })),
+          currentStatus: sortedSteps[0]?.status || 'applied'
+        };
+      });
 
       setApplications(transformedApps);
     } catch (error) {
@@ -82,7 +85,6 @@ export const ApplicationProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const ensureProfileExists = async () => {
     if (!user) return false;
 
-    // Check if profile exists
     const { data: profile, error: fetchError } = await supabase
       .from('profiles')
       .select('id')
@@ -90,13 +92,12 @@ export const ApplicationProvider: React.FC<{ children: React.ReactNode }> = ({ c
       .single();
 
     if (fetchError || !profile) {
-      // Profile doesn't exist, create it
       const { error: createError } = await supabase
         .from('profiles')
         .insert({
           id: user.id,
           email: user.email,
-          name: user.email?.split('@')[0] || 'User' // Default name from email
+          name: user.email?.split('@')[0] || 'User'
         });
 
       if (createError) {
@@ -108,15 +109,13 @@ export const ApplicationProvider: React.FC<{ children: React.ReactNode }> = ({ c
     return true;
   };
 
-  const addApplication = async (applicationData: Omit<JobApplication, 'id' | 'steps'>) => {
+  const addApplication = async (applicationData: Omit<JobApplication, 'id' | 'steps' | 'currentStatus'>) => {
     try {
-      // Ensure profile exists before adding application
       const profileExists = await ensureProfileExists();
       if (!profileExists) {
         throw new Error('Could not create or verify user profile');
       }
 
-      // Insert the application
       const { data: newApp, error: appError } = await supabase
         .from('applications')
         .insert([{
@@ -134,23 +133,21 @@ export const ApplicationProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
       if (appError) throw appError;
 
-      // Insert the initial step
       const { error: stepError } = await supabase
         .from('application_steps')
         .insert([{
           application_id: newApp.id,
           date: applicationData.dateApplied,
           status: 'applied',
-          notes: applicationData.notes || 'Initial application submitted'
+          notes: 'Initial application submitted'
         }]);
 
       if (stepError) throw stepError;
 
-      // Reload applications to get the latest data
       await loadApplications();
     } catch (error) {
       console.error('Error adding application:', error);
-      throw error; // Re-throw to handle in the UI
+      throw error;
     }
   };
 
