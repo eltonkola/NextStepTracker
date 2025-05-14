@@ -79,8 +79,43 @@ export const ApplicationProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }
   };
 
+  const ensureProfileExists = async () => {
+    if (!user) return false;
+
+    // Check if profile exists
+    const { data: profile, error: fetchError } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', user.id)
+      .single();
+
+    if (fetchError || !profile) {
+      // Profile doesn't exist, create it
+      const { error: createError } = await supabase
+        .from('profiles')
+        .insert({
+          id: user.id,
+          email: user.email,
+          name: user.email?.split('@')[0] || 'User' // Default name from email
+        });
+
+      if (createError) {
+        console.error('Error creating profile:', createError);
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   const addApplication = async (applicationData: Omit<JobApplication, 'id' | 'steps'>) => {
     try {
+      // Ensure profile exists before adding application
+      const profileExists = await ensureProfileExists();
+      if (!profileExists) {
+        throw new Error('Could not create or verify user profile');
+      }
+
       // Insert the application
       const { data: newApp, error: appError } = await supabase
         .from('applications')
@@ -115,6 +150,7 @@ export const ApplicationProvider: React.FC<{ children: React.ReactNode }> = ({ c
       await loadApplications();
     } catch (error) {
       console.error('Error adding application:', error);
+      throw error; // Re-throw to handle in the UI
     }
   };
 
