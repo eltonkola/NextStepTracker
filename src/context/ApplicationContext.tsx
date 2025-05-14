@@ -89,9 +89,14 @@ export const ApplicationProvider: React.FC<{ children: React.ReactNode }> = ({ c
       .from('profiles')
       .select('id')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
-    if (fetchError || !profile) {
+    if (fetchError) {
+      console.error('Error fetching profile:', fetchError);
+      return false;
+    }
+
+    if (!profile) {
       const { error: createError } = await supabase
         .from('profiles')
         .insert({
