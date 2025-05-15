@@ -196,7 +196,8 @@ export const ApplicationProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   const addApplicationStep = async (applicationId: string, stepData: Omit<ApplicationStep, 'id'>) => {
     try {
-      const { error } = await supabase
+      // First, insert the new step
+      const { data: newStep, error: stepError } = await supabase
         .from('application_steps')
         .insert([{
           application_id: applicationId,
@@ -204,11 +205,36 @@ export const ApplicationProvider: React.FC<{ children: React.ReactNode }> = ({ c
           status: stepData.status,
           contact_person: stepData.contactPerson,
           notes: stepData.notes
-        }]);
+        }])
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (stepError) throw stepError;
 
-      await loadApplications();
+      // Update the applications state to reflect the new step
+      setApplications(prevApps => 
+        prevApps.map(app => {
+          if (app.id === applicationId) {
+            const newSteps = [
+              {
+                id: newStep.id,
+                date: stepData.date,
+                status: stepData.status,
+                contactPerson: stepData.contactPerson,
+                notes: stepData.notes
+              },
+              ...app.steps
+            ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+            return {
+              ...app,
+              steps: newSteps,
+              currentStatus: newSteps[0].status // Update the current status to match the latest step
+            };
+          }
+          return app;
+        })
+      );
     } catch (error) {
       console.error('Error adding application step:', error);
     }
