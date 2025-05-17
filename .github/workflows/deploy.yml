@@ -39,4 +39,4 @@ jobs:
           publish_dir: ./dist
           publish_branch: gh-pages
           commit_message: 'Automated deployment'
-          keep_history: true
+          disable_nojekyll: true
