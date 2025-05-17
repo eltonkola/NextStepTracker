@@ -7,10 +7,15 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
-  base: '/NextStepTracker/',
+  base: './',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
     assetsInlineLimit: 4096,
-  },
+    rollupOptions: {
+      input: {
+        main: './index.html'
+      }
+    }
+  }
 });
