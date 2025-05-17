@@ -16,14 +16,6 @@ export default defineConfig({
       input: {
         main: './index.html'
       }
-    },
-    target: 'esnext',
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true
-      }
     }
   }
 });
