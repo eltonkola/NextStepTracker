@@ -16,6 +16,9 @@ export default defineConfig({
       input: {
         main: './index.html'
       }
-    }
+    },
+    minify: false,
+    sourcemap: true,
+    target: 'es2020'
   }
 });
