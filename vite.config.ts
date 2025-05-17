@@ -38,12 +38,6 @@ export default defineConfig(({ mode }) => {
       minify: false,
       sourcemap: true,
       target: 'es2020'
-    },
-    define: {
-      'process.env': {
-        NODE_ENV: JSON.stringify(mode),
-        PUBLIC_URL: isProduction ? '/NextStepTracker/' : '/'
-      }
     }
   };
 });
