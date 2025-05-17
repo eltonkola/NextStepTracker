@@ -37,7 +37,8 @@ export default defineConfig(({ mode }) => {
       },
       minify: false,
       sourcemap: true,
-      target: 'es2020'
+      target: 'es2020',
+      manifest: true
     }
   };
 });
