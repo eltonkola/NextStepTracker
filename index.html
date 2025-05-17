@@ -2,17 +2,17 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NextStepTracker - Job Application Tracker</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <base href="${process.env.NODE_ENV === 'production' ? '/NextStepTracker/' : '/'}" />
+    <base href="%PUBLIC_URL%" />
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" crossorigin src="${process.env.NODE_ENV === 'production' ? '/NextStepTracker/assets/main-DvewO-Ta.js' : './assets/main-DvewO-Ta.js'}"></script>
-    <link rel="stylesheet" crossorigin href="${process.env.NODE_ENV === 'production' ? '/NextStepTracker/assets/main-BJ4GdL2m.css' : './assets/main-BJ4GdL2m.css'}">
+    <script type="module" crossorigin src="%PUBLIC_URL%/assets/main-DvewO-Ta.js"></script>
+    <link rel="stylesheet" crossorigin href="%PUBLIC_URL%/assets/main-BJ4GdL2m.css">
   </body>
 </html>
