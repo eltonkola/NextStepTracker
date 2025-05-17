@@ -7,7 +7,7 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
-  base: process.env.NODE_ENV === 'production' ? '' : '/',
+  base: process.env.NODE_ENV === 'production' ? '/NextStepTracker/' : '/',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
@@ -15,6 +15,14 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: './index.html'
+      }
+    },
+    target: 'esnext',
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true
       }
     }
   }
