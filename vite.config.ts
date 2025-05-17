@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => {
     optimizeDeps: {
       exclude: ['lucide-react'],
     },
-    base: isProduction ? '/NextStepTracker/' : '/',
+    base: isProduction ? process.env.VITE_BASE_URL || '/NextStepTracker/' : '/',
     build: {
       outDir: 'dist',
       assetsDir: 'assets',
