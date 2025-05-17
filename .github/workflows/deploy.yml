@@ -44,3 +44,4 @@ jobs:
           disable_nojekyll: true
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
+          base_directory: /NextStepTracker
