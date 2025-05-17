@@ -15,6 +15,20 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: './index.html'
+      },
+      external: [
+        'react',
+        'react-dom',
+        'react-router-dom',
+        'lucide-react'
+      ],
+      output: {
+        globals: {
+          react: 'React',
+          'react-dom': 'ReactDOM',
+          'react-router-dom': 'ReactRouterDOM',
+          'lucide-react': 'LucideReact'
+        }
       }
     },
     minify: false,
