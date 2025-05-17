@@ -15,16 +15,9 @@ import SettingsPage from './pages/SettingsPage';
 import ApplicationDetailsPage from './pages/ApplicationDetailsPage';
 import ApplicationEditPage from './pages/ApplicationEditPage';
 
-const routerConfig = {
-  future: {
-    v7_relativeSplatPath: true,
-    v7_startTransition: true
-  }
-};
-
 function App() {
-  // Initialize dark mode on app mount
   useEffect(() => {
+    // Initialize dark mode
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) {
       document.documentElement.classList.add(savedTheme);
@@ -34,26 +27,24 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-neutral-900">
+    <ThemeProvider>
       <ApplicationContextProvider>
-        <ThemeProvider>
-          <Router future={routerConfig}>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/applications" element={<ApplicationsPage />} />
-              <Route path="/applications/:id" element={<ApplicationDetailsPage />} />
-<Route path="/applications/:id/edit" element={<ApplicationEditPage />} />
-              <Route path="/donate" element={<DonatePage />} />
-              <Route path="/privacy" element={<PrivacyPolicyPage />} />
-              <Route path="/terms" element={<TermsOfServicePage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-            </Routes>
-          </Router>
-        </ThemeProvider>
+        <Router basename={process.env.NODE_ENV === 'production' ? '/NextStepTracker' : ''}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/applications" element={<ApplicationsPage />} />
+            <Route path="/donate" element={<DonatePage />} />
+            <Route path="/privacy" element={<PrivacyPolicyPage />} />
+            <Route path="/terms" element={<TermsOfServicePage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/applications/:id" element={<ApplicationDetailsPage />} />
+            <Route path="/applications/:id/edit" element={<ApplicationEditPage />} />
+          </Routes>
+        </Router>
       </ApplicationContextProvider>
-    </div>
+    </ThemeProvider>
   );
 }
 
