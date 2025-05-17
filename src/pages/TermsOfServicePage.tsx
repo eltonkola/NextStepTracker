@@ -1,5 +1,6 @@
 import React from 'react';
 import Layout from '../components/layout/Layout';
+import { Sparkles, Gift, Rocket, Heart } from 'lucide-react';
 
 const TermsOfServicePage: React.FC = () => {
   return (
@@ -11,73 +12,74 @@ const TermsOfServicePage: React.FC = () => {
           <p className="text-lg mb-6">Last updated: March 12, 2025</p>
           
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">1. Acceptance of Terms</h2>
+            <div className="flex items-center gap-3 mb-4">
+              <Sparkles className="w-6 h-6 text-primary-600" />
+              <h2 className="text-2xl font-semibold">Welcome to NextStepTracker!</h2>
+            </div>
             <p>
-              By accessing and using NextStepTracker, you accept and agree to be bound by the terms and provision of this agreement.
+              We're thrilled you're here! This document might look intimidating, but don't worry - we're just here to make sure everyone has a great experience.
             </p>
           </section>
           
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">2. Description of Service</h2>
+            <div className="flex items-center gap-3 mb-4">
+              <Gift className="w-6 h-6 text-success-600" />
+              <h2 className="text-2xl font-semibold">Using the Service</h2>
+            </div>
             <p>
-              NextStepTracker is a job application tracking service that allows users to manage and monitor their job search process.
+              You're welcome to use NextStepTracker to track your job applications. It's completely free and you can share it with anyone you like!
             </p>
-          </section>
-          
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">3. User Accounts</h2>
             <ul className="list-disc pl-6 space-y-2">
-              <li>You must provide accurate and complete information when creating an account</li>
-              <li>You are responsible for maintaining the security of your account</li>
-              <li>You must notify us immediately of any unauthorized use of your account</li>
+              <li>Feel free to tell your friends about us</li>
+              <li>Share it with your colleagues</li>
+              <li>Use it as much as you want</li>
+              <li>It's all local data, so no worries about sharing</li>
             </ul>
           </section>
           
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">4. User Conduct</h2>
-            <p>You agree not to:</p>
+            <div className="flex items-center gap-3 mb-4">
+              <Rocket className="w-6 h-6 text-accent-600" />
+              <h2 className="text-2xl font-semibold">Job Market Wishes</h2>
+            </div>
+            <p>
+              We're here to help you navigate the job market. Here's what we wish for you:
+            </p>
             <ul className="list-disc pl-6 space-y-2">
-              <li>Use the service for any unlawful purpose</li>
-              <li>Attempt to gain unauthorized access to any portion of the service</li>
-              <li>Interfere with or disrupt the service</li>
-              <li>Share your account credentials with others</li>
+              <li>May your applications be successful</li>
+              <li>May you find opportunities that align with your passions</li>
+              <li>May your interviews go smoothly</li>
+              <li>May you land your dream job</li>
             </ul>
           </section>
           
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">5. Intellectual Property</h2>
+            <div className="flex items-center gap-3 mb-4">
+              <Heart className="w-6 h-6 text-pink-500" />
+              <h2 className="text-2xl font-semibold">A Few Friendly Reminders</h2>
+            </div>
             <p>
-              The service and its original content, features, and functionality are owned by NextStepTracker and are protected by international copyright, trademark, and other intellectual property rights laws.
+              Just a few quick things to keep in mind:
             </p>
-          </section>
-          
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">6. Payment Terms</h2>
             <ul className="list-disc pl-6 space-y-2">
-              <li>All donations are final and non-refundable</li>
-              <li>We use Stripe to process payments securely</li>
-              <li>You agree to provide current, complete, and accurate payment information</li>
+              <li>Be kind to others</li>
+              <li>Don't use the service for anything illegal</li>
+              <li>Remember, your data stays on your computer</li>
+              <li>We're here to help if you need anything</li>
             </ul>
           </section>
           
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">7. Termination</h2>
+            <h2 className="text-2xl font-semibold mb-4">Changes to Terms</h2>
             <p>
-              We reserve the right to terminate or suspend your account and access to the service immediately, without prior notice or liability, for any reason whatsoever.
+              We might update these terms from time to time. If we do, we'll let you know.
             </p>
           </section>
           
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">8. Changes to Terms</h2>
+            <h2 className="text-2xl font-semibold mb-4">Contact Us</h2>
             <p>
-              We reserve the right to modify or replace these terms at any time. We will provide notice of any changes by posting the new terms on the site.
-            </p>
-          </section>
-          
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">9. Contact</h2>
-            <p>
-              If you have any questions about these Terms, please contact us at{' '}
+              Have questions? Need help? Just want to say hi? Drop us a line at{' '}
               <a href="mailto:eltonkola+NextStepTracker@gmail.com" className="text-primary-600 hover:text-primary-700">
                 eltonkola+NextStepTracker@gmail.com
               </a>

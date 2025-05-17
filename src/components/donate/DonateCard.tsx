@@ -1,7 +1,6 @@
 import React from 'react';
 import { Heart, Coffee, Star } from 'lucide-react';
 import { STRIPE_PRODUCTS } from '../../stripe-config';
-import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 interface DonateCardProps {
@@ -64,16 +63,10 @@ const DonateCard: React.FC<DonateCardProps> = ({
 };
 
 const DonateCardList: React.FC = () => {
-  const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = React.useState(false);
 
   const handleDonate = async (priceId: string, mode: 'payment' | 'subscription') => {
-    if (!user) {
-      navigate('/login');
-      return;
-    }
-
     setLoading(true);
 
     try {

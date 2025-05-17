@@ -1,19 +1,13 @@
-export type UserStatus = 'unauthenticated' | 'authenticated';
-
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-}
-
-export type ApplicationStatus = 'applied' | 'screening' | 'progress' | 'offer' | 'rejected';
+export type ApplicationStatus = 'applied' | 'screening' | 'progress' | 'offer' | 'rejected' | 'withdrawn';
 
 export interface ApplicationStep {
   id: string;
-  date: string;
-  contactPerson: string;
-  notes: string;
+  applicationId: string;
   status: ApplicationStatus;
+  date: string;
+  notes: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface JobApplication {
@@ -27,12 +21,11 @@ export interface JobApplication {
   steps: ApplicationStep[];
   notes: string;
   favorite: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface Profile {
-  id: string;
-  name: string;
-  email: string;
-  created_at: string;
-  updated_at: string;
+export interface ThemeContextType {
+  isDarkMode: boolean;
+  toggleTheme: () => void;
 }

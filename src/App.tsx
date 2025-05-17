@@ -1,42 +1,59 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import { ApplicationProvider } from './context/ApplicationContext';
+import { ApplicationContextProvider } from './context/ApplicationContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 // Pages
 import HomePage from './pages/HomePage';
-import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import ApplicationsPage from './pages/ApplicationsPage';
-import ApplicationDetailsPage from './pages/ApplicationDetailsPage';
-import ApplicationEditPage from './pages/ApplicationEditPage';
 import DonatePage from './pages/DonatePage';
-import DonateSuccessPage from './pages/DonateSuccessPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsOfServicePage from './pages/TermsOfServicePage';
 import ContactPage from './pages/ContactPage';
+import SettingsPage from './pages/SettingsPage';
+import ApplicationDetailsPage from './pages/ApplicationDetailsPage';
+import ApplicationEditPage from './pages/ApplicationEditPage';
+
+const routerConfig = {
+  future: {
+    v7_relativeSplatPath: true,
+    v7_startTransition: true
+  }
+};
 
 function App() {
+  // Initialize dark mode on app mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      document.documentElement.classList.add(savedTheme);
+    } else {
+      document.documentElement.classList.add('light');
+    }
+  }, []);
+
   return (
-    <AuthProvider>
-      <ApplicationProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/applications" element={<ApplicationsPage />} />
-            <Route path="/applications/:id" element={<ApplicationDetailsPage />} />
-            <Route path="/applications/:id/edit" element={<ApplicationEditPage />} />
-            <Route path="/donate" element={<DonatePage />} />
-            <Route path="/donate/success" element={<DonateSuccessPage />} />
-            <Route path="/privacy" element={<PrivacyPolicyPage />} />
-            <Route path="/terms" element={<TermsOfServicePage />} />
-            <Route path="/contact" element={<ContactPage />} />
-          </Routes>
-        </Router>
-      </ApplicationProvider>
-    </AuthProvider>
+    <div className="min-h-screen bg-white dark:bg-neutral-900">
+      <ApplicationContextProvider>
+        <ThemeProvider>
+          <Router future={routerConfig}>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/applications" element={<ApplicationsPage />} />
+              <Route path="/applications/:id" element={<ApplicationDetailsPage />} />
+<Route path="/applications/:id/edit" element={<ApplicationEditPage />} />
+              <Route path="/donate" element={<DonatePage />} />
+              <Route path="/privacy" element={<PrivacyPolicyPage />} />
+              <Route path="/terms" element={<TermsOfServicePage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+            </Routes>
+          </Router>
+        </ThemeProvider>
+      </ApplicationContextProvider>
+    </div>
   );
 }
 

@@ -1,11 +1,10 @@
 import React from 'react';
 import Layout from '../components/layout/Layout';
-import DonateCardList from '../components/donate/DonateCard';
 import { Heart } from 'lucide-react';
 
 const DonatePage: React.FC = () => {
   return (
-    <Layout requireAuth>
+    <Layout>
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center p-3 rounded-full bg-accent-100 text-accent-600 mb-4">
@@ -17,8 +16,16 @@ const DonatePage: React.FC = () => {
           </p>
         </div>
         
-        <div className="mb-12">
-          <DonateCardList />
+        <div className="mb-12 text-center">
+          <a 
+            href="https://patreon.com/EltonKola" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-accent-600 text-white rounded-lg hover:bg-accent-700 transition-colors"
+          >
+            <Heart size={20} className="text-white" />
+            Support on Patreon
+          </a>
         </div>
         
         <div className="rounded-lg border border-neutral-200 p-6 bg-white shadow-sm">

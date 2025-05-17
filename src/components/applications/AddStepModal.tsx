@@ -18,22 +18,79 @@ const AddStepModal: React.FC<AddStepModalProps> = ({
   onCancel,
   initialStatus = 'screening'
 }) => {
+  // Define the status progression order
+  const statusOptions = [
+    { value: 'applied', label: 'Applied', color: 'neutral-400' },
+    { value: 'screening', label: 'Screening', color: 'primary-500' },
+    { value: 'interview', label: 'Interview', color: 'primary-400' },
+    { value: 'assessment', label: 'Assessment', color: 'primary-300' },
+    { value: 'final', label: 'Final Interview', color: 'primary-200' },
+    { value: 'progress', label: 'In Progress', color: 'secondary-500' },
+    { value: 'offer', label: 'Offer', color: 'success-500' },
+    { value: 'accepted', label: 'Accepted', color: 'success-400' },
+    { value: 'rejected', label: 'Rejected', color: 'error-500' },
+    { value: 'withdrawn', label: 'Withdrawn', color: 'warning-500' },
+    { value: 'archived', label: 'Archived', color: 'neutral-500' }
+  ];
+
+  // Define the status progression order
+  const statusOrder: ApplicationStatus[] = [
+    'applied',
+    'screening',
+    'interview',
+    'assessment',
+    'final',
+    'progress',
+    'offer',
+    'accepted',
+    'rejected',
+    'withdrawn',
+    'archived'
+  ];
+
+  // Get the next status in the progression
+  const getNextStatus = (currentStatus: ApplicationStatus): ApplicationStatus => {
+    const currentIndex = statusOrder.indexOf(currentStatus);
+    if (currentIndex === -1) return 'screening'; // Fallback to screening if status not found
+    
+    // Terminal states (accepted, rejected, withdrawn, archived) don't have next statuses
+    if (['accepted', 'rejected', 'withdrawn', 'archived'].includes(currentStatus)) {
+      return currentStatus;
+    }
+    
+    const nextIndex = (currentIndex + 1) % statusOrder.length;
+    return statusOrder[nextIndex];
+  };
+
+  // Initialize form data with proper status handling
   const [formData, setFormData] = useState({
     date: format(new Date(), 'yyyy-MM-dd'),
     contactPerson: '',
     notes: '',
-    status: initialStatus
+    status: getNextStatus(initialStatus || 'applied')
   });
+
+  // Update status when initialStatus changes
+  React.useEffect(() => {
+    if (initialStatus) {
+      setFormData(prev => ({
+        ...prev,
+        status: getNextStatus(initialStatus)
+      }));
+    }
+  }, [initialStatus]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+  //  console.log('handleChange:', value);
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Form data before submit:', formData);
     onSubmit(formData);
   };
 
@@ -71,10 +128,11 @@ const AddStepModal: React.FC<AddStepModalProps> = ({
                 onChange={handleChange}
                 required
               >
-                <option value="screening">Screening</option>
-                <option value="progress">In Progress</option>
-                <option value="offer">Offer</option>
-                <option value="rejected">Rejected</option>
+                {statusOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
               </select>
             </div>
             

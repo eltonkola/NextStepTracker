@@ -99,14 +99,14 @@ const DashboardPage: React.FC = () => {
             value={`${stats.progressRate}%`}
             icon={<Target size={20} />}
             subtitle="Got first response"
-            color="warning"
+            color="primary"
           />
           <StatsCard
             title="Offer Rate"
             value={`${stats.acceptanceRate}%`}
             icon={<Sparkles size={20} />}
             subtitle="Received offers"
-            color="success"
+            color="secondary"
           />
         </div>
         

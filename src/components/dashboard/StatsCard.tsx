@@ -31,11 +31,13 @@ const StatsCard: React.FC<StatsCardProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg border border-neutral-200 shadow-sm p-6">
+    <div className="bg-white dark:bg-neutral-800 rounded-lg border border-neutral-200 dark:border-neutral-700 shadow-sm p-6">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-neutral-600 text-sm font-medium">{title}</h3>
+        <h3 className="text-neutral-600 dark:text-neutral-200 text-sm font-medium">{title}</h3>
         <div className={`rounded-full p-2 ${colorClasses[color]}`}>
-          {icon}
+          <div className="text-current">
+            {icon}
+          </div>
         </div>
       </div>
       

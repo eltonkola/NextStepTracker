@@ -9,7 +9,7 @@ const ApplicationsPage: React.FC = () => {
   const [isAddingApplication, setIsAddingApplication] = useState(false);
   
   return (
-    <Layout requireAuth>
+    <Layout>
       <div className="space-y-6">
         {isAddingApplication ? (
           <ApplicationForm 

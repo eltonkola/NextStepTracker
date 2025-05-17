@@ -209,16 +209,13 @@ const ApplicationDetailsPage: React.FC = () => {
                         </time>
                       </div>
                       
-                      {/* Don't allow deleting the first/initial step */}
-                      {index !== sortedSteps.length - 1 && (
-                        <button
-                          onClick={() => handleDeleteStep(step.id)}
-                          className="p-1 text-neutral-400 hover:text-error-500"
-                          aria-label="Delete step"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      )}
+                      <button
+                        onClick={() => handleDeleteStep(step.id)}
+                        className="p-1 text-neutral-400 hover:text-error-500"
+                        aria-label="Delete step"
+                      >
+                        <Trash2 size={14} />
+                      </button>
                     </div>
                     
                     <div className="mt-3">

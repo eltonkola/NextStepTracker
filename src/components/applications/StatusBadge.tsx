@@ -36,6 +36,27 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status, size = 'md' }) => {
           label: 'Screening',
           icon: <PhoneCall size={size === 'sm' ? 12 : 16} className="mr-1" />
         };
+      case 'interview':
+        return {
+          bg: 'bg-primary-40',
+          text: 'text-primary-700',
+          label: 'Interview',
+          icon: <PhoneCall size={size === 'sm' ? 12 : 16} className="mr-1" />
+        };
+      case 'assessment':
+        return {
+          bg: 'bg-primary-30',
+          text: 'text-primary-700',
+          label: 'Assessment',
+          icon: <Clock size={size === 'sm' ? 12 : 16} className="mr-1" />
+        };
+      case 'final':
+        return {
+          bg: 'bg-primary-20',
+          text: 'text-primary-700',
+          label: 'Final',
+          icon: <Clock size={size === 'sm' ? 12 : 16} className="mr-1" />
+        };
       case 'progress':
         return {
           bg: 'bg-secondary-50',
@@ -50,6 +71,13 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status, size = 'md' }) => {
           label: 'Offer',
           icon: <CheckCircle size={size === 'sm' ? 12 : 16} className="mr-1" />
         };
+      case 'accepted':
+        return {
+          bg: 'bg-success-40',
+          text: 'text-success-700',
+          label: 'Accepted',
+          icon: <CheckCircle size={size === 'sm' ? 12 : 16} className="mr-1" />
+        };
       case 'rejected':
         return {
           bg: 'bg-error-50',
@@ -57,12 +85,26 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status, size = 'md' }) => {
           label: 'Rejected',
           icon: <XCircle size={size === 'sm' ? 12 : 16} className="mr-1" />
         };
+      case 'withdrawn':
+        return {
+          bg: 'bg-warning-50',
+          text: 'text-warning-700',
+          label: 'Withdrawn',
+          icon: <XCircle size={size === 'sm' ? 12 : 16} className="mr-1" />
+        };
+      case 'archived':
+        return {
+          bg: 'bg-neutral-50',
+          text: 'text-neutral-700',
+          label: 'Archived',
+          icon: <Clock size={size === 'sm' ? 12 : 16} className="mr-1" />
+        };
       default:
         return {
           bg: 'bg-neutral-100',
           text: 'text-neutral-700',
-          label: 'Unknown',
-          icon: null
+          label: status.charAt(0).toUpperCase() + status.slice(1),
+          icon: <Clock size={size === 'sm' ? 12 : 16} className="mr-1" />
         };
     }
   };

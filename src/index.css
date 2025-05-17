@@ -58,11 +58,52 @@
   --neutral-700: #334155;
   --neutral-800: #1e293b;
   --neutral-900: #0f172a;
+  
+  /* Light mode colors */
+  --bg-color: var(--tw-bg-opacity) rgb(255 255 255 / var(--tw-bg-opacity));
+  --text-color: #1f2937;
+  --border-color: #e5e7eb;
+  --card-bg: #ffffff;
+  --card-text: #1f2937;
+  --primary-color: #3b82f6;
+  --primary-bg: #f0f9ff;
+  --primary-text: #1d4ed8;
+  --primary-hover: #dbeafe;
+  --secondary-color: #64748b;
+  --secondary-bg: #f8fafc;
+  --secondary-text: #475569;
+  --secondary-hover: #f1f5f9;
+  --accent-color: #ef4444;
+  --accent-bg: #fee2e2;
+  --accent-text: #dc2626;
+  --accent-hover: #fdf2f2;
+}
+
+.dark {
+  --bg-color: var(--tw-bg-opacity) rgb(31 41 55 / var(--tw-bg-opacity));
+  --text-color: #f3f4f6;
+  --border-color: #374151;
+  --card-bg: #1f2937;
+  --card-text: #f3f4f6;
+  --primary-color: #3b82f6;
+  --primary-bg: #1e3a8a;
+  --primary-text: #93c5fd;
+  --primary-hover: #1e3a8a;
+  --secondary-color: #94a3b8;
+  --secondary-bg: #334155;
+  --secondary-text: #cbd5e1;
+  --secondary-hover: #334155;
+  --accent-color: #ef4444;
+  --accent-bg: #991b1b;
+  --accent-text: #fca5a5;
+  --accent-hover: #991b1b;
 }
 
 @layer base {
   body {
     @apply font-sans bg-neutral-50 text-neutral-800;
+    background-color: var(--bg-color);
+    color: var(--text-color);
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -97,6 +138,7 @@
   
   .card {
     @apply rounded-lg border border-neutral-200 bg-white shadow-sm transition-all;
+    background-color: var(--card-bg);
   }
   
   .form-input {
@@ -176,4 +218,74 @@
 
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-neutral-400;
+}
+
+/* Update existing Tailwind classes with theme variables */
+.bg-white,
+.bg-neutral-50 {
+  background-color: var(--card-bg) !important;
+}
+
+.text-neutral-900,
+.text-neutral-800 {
+  color: var(--card-text) !important;
+}
+
+.border-neutral-200 {
+  border-color: var(--border-color) !important;
+}
+
+.bg-primary-50 {
+  background-color: var(--primary-bg) !important;
+}
+
+.text-primary-700 {
+  color: var(--primary-text) !important;
+}
+
+.hover\:bg-primary-100:hover {
+  background-color: var(--primary-hover) !important;
+}
+
+.bg-secondary-50 {
+  background-color: var(--secondary-bg) !important;
+}
+
+.text-secondary-700 {
+  color: var(--secondary-text) !important;
+}
+
+.hover\:bg-secondary-100:hover {
+  background-color: var(--secondary-hover) !important;
+}
+
+.bg-accent-50 {
+  background-color: var(--accent-bg) !important;
+}
+
+.text-accent-700 {
+  color: var(--accent-text) !important;
+}
+
+.hover\:bg-accent-50:hover {
+  background-color: var(--accent-hover) !important;
+}
+
+/* Ensure dark mode class is applied */
+[data-theme="dark"] {
+  --theme: dark;
+}
+
+[data-theme="light"] {
+  --theme: light;
+}
+
+/* Add smooth transition for theme changes */
+[data-theme] {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Apply dark mode to all elements */
+[data-theme="dark"] * {
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
