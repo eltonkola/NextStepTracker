@@ -32437,13 +32437,29 @@ const ApplicationBoard = ({ applications, onAddApplication }) => {
                 application.id
               )) }) })
             ] }, status);
-          }) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4", children: applicationsByStatus.applied.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-44 border border-dashed border-neutral-300 rounded-md flex items-center justify-center text-neutral-500 text-sm p-4", children: "No potential applications yet" }) : applicationsByStatus.applied.map((application) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-            ApplicationItem,
-            {
-              application
-            },
-            application.id
-          )) }) })
+          }) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-4", children: section.statuses.map((status) => {
+            if (!filters[status]) return null;
+            const applications2 = applicationsByStatus[status];
+            const statusOption = statusOptions.find((option) => option.value === status);
+            return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center mb-3", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `w-3 h-3 rounded-full bg-${getStatusColor(status)} mr-2` }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-medium", children: statusOption?.label }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "ml-1.5 text-sm text-neutral-500", children: [
+                  "(",
+                  applications2.length,
+                  ")"
+                ] })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4", children: applications2.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-44 border border-dashed border-neutral-300 rounded-md flex items-center justify-center text-neutral-500 text-sm p-4", children: "No applications in this status" }) : applications2.map((application) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                ApplicationItem,
+                {
+                  application
+                },
+                application.id
+              )) })
+            ] }, status);
+          }) }) })
         }
       )
     ] }) }, section.title)),
