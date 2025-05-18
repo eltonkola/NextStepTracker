@@ -33720,4 +33720,4 @@ window.addEventListener("error", (event) => {
   ] });
   root.render(errorElement);
 });
-//# sourceMappingURL=main-BBP1BPJK.js.map
+//# sourceMappingURL=main.js.map
