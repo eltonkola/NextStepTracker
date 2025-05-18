@@ -32138,6 +32138,9 @@ function Le(e3, t2) {
 }
 let X = K(Ie), me = K(Ae), Fe = K(Le), ze = Object.assign(X, { Child: Fe, Root: X });
 const ApplicationBoard = ({ applications, onAddApplication }) => {
+  const getStatusGroupColor = (group) => {
+    return group.color;
+  };
   const statusGroups = [
     {
       title: "Active",
@@ -33665,7 +33668,7 @@ function App() {
       document.documentElement.classList.add("light");
     }
   }, []);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ApplicationContextProvider, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(BrowserRouter, { basename: "/NextStepTracker", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Routes, { children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ApplicationContextProvider, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(BrowserRouter, { basename: "/NextStepTracker", future: { v7_startTransition: true, v7_relativeSplatPath: true }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Routes, { children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/", element: /* @__PURE__ */ jsxRuntimeExports.jsx(HomePage, {}) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/dashboard", element: /* @__PURE__ */ jsxRuntimeExports.jsx(DashboardPage, {}) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/applications", element: /* @__PURE__ */ jsxRuntimeExports.jsx(ApplicationsPage, {}) }),
