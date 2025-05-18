@@ -4,14 +4,13 @@ import react from '@vitejs/plugin-react';
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const isProduction = mode === 'production';
 
   return {
     plugins: [react()],
     optimizeDeps: {
       exclude: ['lucide-react'],
     },
-    base: isProduction ? process.env.VITE_BASE_URL || '/NextStepTracker/' : '/',
+    base: '/NextStepTracker/',
     build: {
       outDir: 'dist',
       assetsDir: 'assets',
@@ -20,12 +19,17 @@ export default defineConfig(({ mode }) => {
         input: {
           main: './index.html'
         },
-
+        output: {
+          entryFileNames: `assets/[name].js`,
+          chunkFileNames: `assets/[name].js`,
+          assetFileNames: `assets/[name].[ext]`
+        }
       },
       minify: false,
       sourcemap: true,
       target: 'es2020',
-      manifest: true
+      manifest: true,
+      emptyOutDir: true
     }
   };
 });
