@@ -3,6 +3,7 @@ import { JobApplication, ApplicationStatus } from '../../types';
 import ApplicationItem from './ApplicationItem';
 import { PlusCircle, Filter, Search, Minus, Plus } from 'lucide-react';
 import { Transition } from '@headlessui/react';
+import { useNavigate } from 'react-router-dom';
 
 interface ApplicationBoardProps {
   applications: JobApplication[];
@@ -22,6 +23,7 @@ interface Section {
 }
 
 const ApplicationBoard: React.FC<ApplicationBoardProps> = ({ applications, onAddApplication }) => {
+  const navigate = useNavigate();
   // Define status groups
   const getStatusGroupColor = (group: StatusGroup) => {
   return group.color;
@@ -282,8 +284,7 @@ const statusGroups: StatusGroup[] = [
                           key={app.id}
                           className="px-3 py-2 hover:bg-neutral-100 cursor-pointer border-l-4 border-transparent hover:border-${getStatusColor(app.currentStatus)}"
                           onClick={() => {
-                            // You can add navigation logic here
-                            console.log('Clicked on:', app);
+                            navigate(`/applications/${app.id}`);
                           }}
                         >
                           <div className="flex justify-between items-start">
