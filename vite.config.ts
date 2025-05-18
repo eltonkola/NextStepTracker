@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => {
     optimizeDeps: {
       exclude: ['lucide-react'],
     },
-    base: '/NextStepTracker/',
+    base: process.env.NODE_ENV === 'development' ? '/' : '/NextStepTracker/',
     build: {
       outDir: 'dist',
       assetsDir: 'assets',
