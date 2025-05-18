@@ -158,22 +158,22 @@ const statusGroups: StatusGroup[] = [
     {
       title: 'Timeline',
       type: 'columns',
-      statuses: ['screening', 'interview', 'assessment', 'final', 'progress', 'offer']
+      statuses: ['screening', 'interview', 'assessment', 'final', 'progress', 'offer'] as ApplicationStatus[]
     },
     {
       title: 'Done',
       type: 'columns',
-      statuses: ['accepted', 'withdrawn', 'archived']
+      statuses: ['accepted', 'withdrawn', 'archived'] as ApplicationStatus[]
     },
     {
       title: 'Potential Applications',
       type: 'grid',
-      statuses: ['applied']
+      statuses: ['applied'] as ApplicationStatus[]
     },
     {
       title: 'Rejections',
       type: 'grid',
-      statuses: ['rejected']
+      statuses: ['rejected'] as ApplicationStatus[]
     }
   ];
 
@@ -392,19 +392,40 @@ const statusGroups: StatusGroup[] = [
                     })}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {applicationsByStatus.applied.length === 0 ? (
-                      <div className="h-44 border border-dashed border-neutral-300 rounded-md flex items-center justify-center text-neutral-500 text-sm p-4">
-                        No potential applications yet
-                      </div>
-                    ) : (
-                      applicationsByStatus.applied.map(application => (
-                        <ApplicationItem 
-                          key={application.id} 
-                          application={application} 
-                        />
-                      ))
-                    )}
+                  <div className="space-y-4">
+                    {section.statuses.map(status => {
+                      if (!filters[status]) return null;
+                      
+                      const applications = applicationsByStatus[status];
+                      const statusOption = statusOptions.find(option => option.value === status);
+                      
+                      return (
+                        <div key={status}>
+                          <div className="flex items-center mb-3">
+                            <div className={`w-3 h-3 rounded-full bg-${getStatusColor(status)} mr-2`} />
+                            <h4 className="font-medium">{statusOption?.label}</h4>
+                            <span className="ml-1.5 text-sm text-neutral-500">
+                              ({applications.length})
+                            </span>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                            {applications.length === 0 ? (
+                              <div className="h-44 border border-dashed border-neutral-300 rounded-md flex items-center justify-center text-neutral-500 text-sm p-4">
+                                No applications in this status
+                              </div>
+                            ) : (
+                              applications.map(application => (
+                                <ApplicationItem 
+                                  key={application.id} 
+                                  application={application} 
+                                />
+                              ))
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>
