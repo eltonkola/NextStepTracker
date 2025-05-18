@@ -32138,6 +32138,7 @@ function Le(e3, t2) {
 }
 let X = K(Ie), me = K(Ae), Fe = K(Le), ze = Object.assign(X, { Child: Fe, Root: X });
 const ApplicationBoard = ({ applications, onAddApplication }) => {
+  const navigate = useNavigate();
   const getStatusGroupColor = (group) => {
     return group.color;
   };
@@ -32346,7 +32347,7 @@ const ApplicationBoard = ({ applications, onAddApplication }) => {
               {
                 className: "px-3 py-2 hover:bg-neutral-100 cursor-pointer border-l-4 border-transparent hover:border-${getStatusColor(app.currentStatus)}",
                 onClick: () => {
-                  console.log("Clicked on:", app);
+                  navigate(`/applications/${app.id}`);
                 },
                 children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-start", children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
