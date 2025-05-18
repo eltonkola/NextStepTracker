@@ -29,7 +29,7 @@ function App() {
   return (
     <ThemeProvider>
       <ApplicationContextProvider>
-        <Router basename={process.env.NODE_ENV === 'production' ? '/NextStepTracker' : ''}>
+        <Router basename={process.env.NODE_ENV === 'production' ? '/NextStepTracker' : ''} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/dashboard" element={<DashboardPage />} />

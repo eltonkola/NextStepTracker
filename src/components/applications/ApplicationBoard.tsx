@@ -23,7 +23,11 @@ interface Section {
 
 const ApplicationBoard: React.FC<ApplicationBoardProps> = ({ applications, onAddApplication }) => {
   // Define status groups
-  const statusGroups: StatusGroup[] = [
+  const getStatusGroupColor = (group: StatusGroup) => {
+  return group.color;
+};
+
+const statusGroups: StatusGroup[] = [
     {
       title: 'Active',
       statuses: ['applied', 'screening', 'interview', 'assessment', 'final', 'progress'],
