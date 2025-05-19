@@ -1,5 +1,18 @@
 export type ApplicationStatus = 'applied' | 'screening' | 'progress' | 'offer' | 'rejected' | 'withdrawn';
 
+export enum UserStatus {
+  PENDING = 'pending',
+  AUTHENTICATED = 'authenticated',
+  UNAUTHENTICATED = 'unauthenticated'
+}
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  status: UserStatus;
+}
+
 export interface ApplicationStep {
   id: string;
   applicationId: string;
