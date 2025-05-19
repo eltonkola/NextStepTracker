@@ -32533,7 +32533,7 @@ const ApplicationBoard = ({ applications, onAddApplication }) => {
               {
                 className: "px-3 py-2 hover:bg-neutral-100 cursor-pointer border-l-4 border-transparent hover:border-${getStatusColor(app.currentStatus)}",
                 onClick: () => {
-                  navigate(`applications/${app.id}`);
+                  navigate(useResolvedPath(`applications/${app.id}`).pathname);
                 },
                 children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-start", children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
