@@ -118,30 +118,29 @@ const DashboardPage: React.FC = () => {
             value={`${stats.progressRate}%`}
             icon={<Target size={20} />}
             subtitle="Got first response"
-            color="success"
+            color="primary"
           />
           <StatsCard
             title="Acceptance Rate"
             value={`${stats.acceptanceRate}%`}
             icon={<Sparkles size={20} />}
             subtitle="Overall success"
-            color="success"
+            color="secondary"
           />
         </div>
 
-        {/* Progress Timeline & Status Chart */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Status Breakdown & Progress Timeline */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="bg-white dark:bg-neutral-800 rounded-lg shadow p-6 lg:col-span-2">
+            <h2 className="text-xl font-semibold mb-4">Status Breakdown</h2>
+            <StatusChart applications={applications} />
+          </div>
           <div className="bg-white dark:bg-neutral-800 rounded-lg shadow p-6">
             <h2 className="text-xl font-semibold mb-4">Application Timeline</h2>
             <ProgressTimeline applications={applications} />
             <div className="mt-4 text-sm text-neutral-500">
               Average response time: {stats.avgResponseTime} days
             </div>
-          </div>
-
-          <div className="bg-white dark:bg-neutral-800 rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold mb-4">Status Breakdown</h2>
-            <StatusChart applications={applications} />
           </div>
         </div>
 
