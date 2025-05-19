@@ -31560,7 +31560,7 @@ const DashboardPage = () => {
           value: `${stats.progressRate}%`,
           icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Target, { size: 20 }),
           subtitle: "Got first response",
-          color: "success"
+          color: "primary"
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -31570,11 +31570,15 @@ const DashboardPage = () => {
           value: `${stats.acceptanceRate}%`,
           icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { size: 20 }),
           subtitle: "Overall success",
-          color: "success"
+          color: "secondary"
         }
       )
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-6", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-3 gap-6", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white dark:bg-neutral-800 rounded-lg shadow p-6 lg:col-span-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-xl font-semibold mb-4", children: "Status Breakdown" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(StatusChart, { applications })
+      ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white dark:bg-neutral-800 rounded-lg shadow p-6", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-xl font-semibold mb-4", children: "Application Timeline" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(ProgressTimeline, { applications }),
@@ -31583,10 +31587,6 @@ const DashboardPage = () => {
           stats.avgResponseTime,
           " days"
         ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white dark:bg-neutral-800 rounded-lg shadow p-6", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-xl font-semibold mb-4", children: "Status Breakdown" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(StatusChart, { applications })
       ] })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-6", children: [
