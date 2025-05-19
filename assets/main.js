@@ -31765,6 +31765,7 @@ const StatusBadge = ({ status, size = "md" }) => {
   ] });
 };
 const ApplicationItem = ({ application }) => {
+  const navigate = useNavigate();
   const { toggleFavorite, deleteApplication } = useApplications();
   const [showActions, setShowActions] = React.useState(false);
   const formatDate = (dateString) => {
@@ -31789,7 +31790,7 @@ const ApplicationItem = ({ application }) => {
     }
   };
   const handleApplicationClick = () => {
-    window.location.href = `/applications/${application.id}`;
+    navigate(`/applications/${application.id}`);
   };
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative group", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
