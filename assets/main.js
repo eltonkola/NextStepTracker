@@ -9124,6 +9124,26 @@ const Trash2 = createLucideIcon("Trash2", [
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
+const TrendingDown = createLucideIcon("TrendingDown", [
+  ["polyline", { points: "22 17 13.5 8.5 8.5 13.5 2 7", key: "1r2t7k" }],
+  ["polyline", { points: "16 17 22 17 22 11", key: "11uiuu" }]
+]);
+/**
+ * @license lucide-react v0.344.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const TrendingUp = createLucideIcon("TrendingUp", [
+  ["polyline", { points: "22 7 13.5 15.5 8.5 10.5 2 17", key: "126l90" }],
+  ["polyline", { points: "16 7 22 7 22 13", key: "kwv8wd" }]
+]);
+/**
+ * @license lucide-react v0.344.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
 const Upload = createLucideIcon("Upload", [
   ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }],
   ["polyline", { points: "17 8 12 3 7 8", key: "t8dd8p" }],
@@ -29628,61 +29648,34 @@ const StatusChart = ({ applications }) => {
   const counts = {
     applied: 0,
     screening: 0,
-    interview: 0,
-    assessment: 0,
-    final: 0,
     progress: 0,
     offer: 0,
-    accepted: 0,
     rejected: 0,
-    withdrawn: 0,
-    archived: 0
+    withdrawn: 0
   };
   applications.forEach((app) => {
     counts[app.currentStatus]++;
   });
+  const total = applications.length;
+  const data = Object.entries(counts).filter(([_, count]) => count > 0).map(([status, count]) => ({
+    name: status.charAt(0).toUpperCase() + status.slice(1),
+    value: count,
+    percentage: total > 0 ? Math.round(count / total * 100) : 0
+  }));
   const statusColors = {
     applied: "#94a3b8",
     // neutral-500
     screening: "#3b82f6",
     // primary-500
-    interview: "#2563eb",
-    // primary-600
-    assessment: "#1d4ed8",
-    // primary-700
-    final: "#1e40af",
-    // primary-800
-    progress: "#0ea5e9",
-    // secondary-500
-    offer: "#22c55e",
-    // success-500
-    accepted: "#16a34a",
-    // success-600
-    rejected: "#ef4444",
-    // error-500
-    withdrawn: "#64748b",
-    // neutral-500
-    archived: "#475569"
+    progress: "#64748b",
     // neutral-600
+    offer: "#10b981",
+    // success-500
+    rejected: "#ef4444",
+    // red-500
+    withdrawn: "#f87171"
+    // red-400
   };
-  const statusLabels = {
-    applied: "Applied",
-    screening: "Screening",
-    interview: "Interview",
-    assessment: "Assessment",
-    final: "Final Interview",
-    progress: "In Progress",
-    offer: "Offer",
-    accepted: "Accepted",
-    rejected: "Rejected",
-    withdrawn: "Withdrawn",
-    archived: "Archived"
-  };
-  const data = Object.entries(counts).map(([status, count]) => ({
-    name: statusLabels[status],
-    value: count,
-    color: statusColors[status]
-  })).filter((item) => item.value > 0);
   if (applications.length === 0) {
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white p-6 rounded-lg border border-neutral-200 shadow-sm", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-lg font-medium mb-3", children: "Application Status" }),
@@ -29691,7 +29684,7 @@ const StatusChart = ({ applications }) => {
   }
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white p-6 rounded-lg border border-neutral-200 shadow-sm", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-lg font-medium mb-6", children: "Application Status" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-64", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ResponsiveContainer, { width: "100%", height: "100%", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(PieChart, { children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full h-[300px]", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ResponsiveContainer, { width: "100%", height: "100%", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(PieChart, { children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         Pie,
         {
@@ -29704,7 +29697,7 @@ const StatusChart = ({ applications }) => {
           fill: "#8884d8",
           dataKey: "value",
           label: ({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`,
-          children: data.map((entry, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(Cell, { fill: entry.color }, `cell-${index}`))
+          children: data.map((entry, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(Cell, { fill: statusColors[entry.name.toLowerCase()] }, `cell-${index}`))
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -31352,6 +31345,133 @@ function validateTime(hours, minutes, seconds) {
 function validateTimezone(_hours, minutes) {
   return minutes >= 0 && minutes <= 59;
 }
+const ProgressTimeline = ({ applications }) => {
+  const calculateAverageTime = () => {
+    const totalTime = applications.filter((app) => app.steps.length > 0).reduce((acc, app) => {
+      const firstStep = app.steps[0];
+      const appliedDate = new Date(app.dateApplied);
+      const firstResponseDate = new Date(firstStep.date);
+      const days = differenceInDays(firstResponseDate, appliedDate);
+      return acc + (isNaN(days) ? 0 : days);
+    }, 0);
+    return applications.length > 0 ? Math.round(totalTime / applications.length) : 0;
+  };
+  const getStatusProgression = () => {
+    const counts = {
+      applied: 0,
+      screening: 0,
+      progress: 0,
+      offer: 0,
+      rejected: 0,
+      withdrawn: 0
+    };
+    applications.forEach((app) => {
+      const steps = app.steps.filter((step) => step.status !== "applied");
+      if (steps.length > 0) {
+        counts[steps[0].status]++;
+      }
+    });
+    return Object.entries(counts).filter(([status, count]) => count > 0).map(([status, count]) => ({
+      status,
+      count,
+      percentage: Math.round(count / applications.length * 100)
+    }));
+  };
+  const progression = getStatusProgression();
+  const avgTime = calculateAverageTime();
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { size: 16, className: "text-neutral-400" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm text-neutral-500", children: "Average Response Time" })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-2xl font-semibold", children: [
+        avgTime,
+        " days"
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-2", children: progression.map((item, index) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-2 h-2 rounded-full", style: {
+          backgroundColor: getStatusColor$1(item.status)
+        } }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm text-neutral-500", children: item.status })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 h-2 bg-neutral-200 dark:bg-neutral-700 rounded-full", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-2 rounded-full", style: {
+          width: `${item.percentage}%`,
+          backgroundColor: getStatusColor$1(item.status)
+        } }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-sm text-neutral-500", children: [
+          item.count,
+          " apps"
+        ] })
+      ] })
+    ] }, index)) })
+  ] });
+};
+const getStatusColor$1 = (status) => {
+  switch (status) {
+    case "applied":
+      return "#94a3b8";
+    case "screening":
+      return "#3b82f6";
+    case "progress":
+      return "#64748b";
+    case "offer":
+      return "#10b981";
+    case "rejected":
+      return "#ef4444";
+    default:
+      return "#94a3b8";
+  }
+};
+const ActivityFeed = ({ applications }) => {
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case "applied":
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { size: 16, className: "text-neutral-400" });
+      case "screening":
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(TrendingUp, { size: 16, className: "text-primary-500" });
+      case "progress":
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(TrendingUp, { size: 16, className: "text-secondary-500" });
+      case "offer":
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(TrendingUp, { size: 16, className: "text-success-500" });
+      case "rejected":
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(TrendingDown, { size: 16, className: "text-red-500" });
+      default:
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { size: 16, className: "text-neutral-400" });
+    }
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-4", children: applications.map((app, index) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    "div",
+    {
+      className: "flex items-start p-3 hover:bg-neutral-50 rounded-md -mx-3 transition-colors",
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-shrink-0", children: getStatusIcon(app.currentStatus) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 min-w-0 ml-3", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-start", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm font-medium text-neutral-900 truncate", children: [
+                app.position,
+                " at ",
+                app.company
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-1 text-sm text-neutral-500 truncate", children: app.location || "Location not specified" })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-neutral-100 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200", children: app.currentStatus }) })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-2 text-sm text-neutral-500", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "mr-2", children: format(new Date(app.dateApplied), "MMM d") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "•" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ml-2", children: app.salary ? `Salary: ${app.salary}` : "Salary not specified" })
+          ] })
+        ] })
+      ]
+    },
+    app.id
+  )) });
+};
 const DashboardPage = () => {
   const { applications } = useApplications();
   const stats = reactExports.useMemo(() => {
@@ -31360,37 +31480,52 @@ const DashboardPage = () => {
       screening: 0,
       progress: 0,
       offer: 0,
-      rejected: 0
+      rejected: 0,
+      withdrawn: 0
     };
-    applications.forEach((app) => {
-      counts[app.currentStatus]++;
-    });
+    applications.forEach((app) => counts[app.currentStatus]++);
     const total = applications.length;
     const active = total - counts.rejected;
     const acceptanceRate = total > 0 ? (counts.offer / total * 100).toFixed(1) : "0";
-    const today = /* @__PURE__ */ new Date();
-    const last30Days = applications.filter((app) => {
-      const appDate = new Date(app.dateApplied);
-      return differenceInDays(today, appDate) <= 30;
-    }).length;
     const progressRate = total > 0 ? ((counts.screening + counts.progress + counts.offer) / total * 100).toFixed(1) : "0";
+    const today = /* @__PURE__ */ new Date();
+    const last7Days = applications.filter(
+      (app) => differenceInDays(today, new Date(app.dateApplied)) <= 7
+    ).length;
+    const last30Days = applications.filter(
+      (app) => differenceInDays(today, new Date(app.dateApplied)) <= 30
+    ).length;
+    const avgResponseTime = applications.filter((app) => app.currentStatus !== "applied").reduce((acc, app) => {
+      const steps = app.steps.filter((step) => step.status !== "applied");
+      if (steps.length > 0) {
+        const firstResponse = new Date(steps[0].date);
+        const appliedDate = new Date(app.dateApplied);
+        return acc + differenceInDays(firstResponse, appliedDate);
+      }
+      return acc;
+    }, 0) / applications.length;
     return {
       total,
       active,
       acceptanceRate,
-      last30Days,
       progressRate,
+      last7Days,
+      last30Days,
+      avgResponseTime: isNaN(avgResponseTime) ? 0 : Math.round(avgResponseTime),
       counts
     };
   }, [applications]);
   const recentApplications = reactExports.useMemo(() => {
     return [...applications].sort((a2, b2) => new Date(b2.dateApplied).getTime() - new Date(a2.dateApplied).getTime()).slice(0, 5);
   }, [applications]);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Layout, { requireAuth: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
+  const favoriteApplications = reactExports.useMemo(() => {
+    return applications.filter((app) => app.favorite).slice(0, 3);
+  }, [applications]);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Layout, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col md:flex-row items-start md:items-center justify-between gap-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-2xl font-bold mb-1", children: "Dashboard" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-neutral-600", children: "Your job application overview" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-neutral-600", children: "Overview of your job application journey" })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(Link, { to: "/applications", className: "btn btn-primary", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(PlusCircle, { size: 16, className: "mr-2" }),
@@ -31404,7 +31539,7 @@ const DashboardPage = () => {
           title: "Total Applications",
           value: stats.total,
           icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Briefcase, { size: 20 }),
-          subtitle: "All time",
+          subtitle: "All applications",
           color: "primary"
         }
       ),
@@ -31414,7 +31549,7 @@ const DashboardPage = () => {
           title: "Active Applications",
           value: stats.active,
           icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Clipboard, { size: 20 }),
-          subtitle: "In progress",
+          subtitle: "Currently in progress",
           color: "secondary"
         }
       ),
@@ -31425,58 +31560,109 @@ const DashboardPage = () => {
           value: `${stats.progressRate}%`,
           icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Target, { size: 20 }),
           subtitle: "Got first response",
-          color: "primary"
+          color: "success"
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         StatsCard,
         {
-          title: "Offer Rate",
+          title: "Acceptance Rate",
           value: `${stats.acceptanceRate}%`,
           icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { size: 20 }),
-          subtitle: "Received offers",
-          color: "secondary"
+          subtitle: "Overall success",
+          color: "success"
         }
       )
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-3 gap-6", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "lg:col-span-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx(StatusChart, { applications }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white p-6 rounded-lg border border-neutral-200 shadow-sm", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mb-6", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-lg font-medium", children: "Recent Applications" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Link, { to: "/applications", className: "text-sm text-primary-600 hover:text-primary-700", children: "View all" })
-        ] }),
-        recentApplications.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center py-8 text-neutral-500", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "No applications yet" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Link, { to: "/applications", className: "btn btn-primary mt-4", children: "Add Your First Application" })
-        ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-4", children: recentApplications.map((app) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          Link,
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-6", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white dark:bg-neutral-800 rounded-lg shadow p-6", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-xl font-semibold mb-4", children: "Application Timeline" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(ProgressTimeline, { applications }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-4 text-sm text-neutral-500", children: [
+          "Average response time: ",
+          stats.avgResponseTime,
+          " days"
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white dark:bg-neutral-800 rounded-lg shadow p-6", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-xl font-semibold mb-4", children: "Status Breakdown" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(StatusChart, { applications })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-6", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white dark:bg-neutral-800 rounded-lg shadow p-6", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-xl font-semibold mb-4", children: "Recent Activity" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(ActivityFeed, { applications: recentApplications })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white dark:bg-neutral-800 rounded-lg shadow p-6", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-xl font-semibold mb-4", children: "Favorite Applications" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-4", children: favoriteApplications.map((app) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
           {
-            to: `/applications/${app.id}`,
             className: "flex items-start p-3 hover:bg-neutral-50 rounded-md -mx-3 transition-colors",
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 min-w-0", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm font-medium text-neutral-900 truncate", children: [
-                  app.position,
-                  " at ",
-                  app.company
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mt-1", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `
-                          inline-block w-2 h-2 rounded-full 
-                          ${app.currentStatus === "applied" ? "bg-neutral-500" : app.currentStatus === "screening" ? "bg-primary-500" : app.currentStatus === "progress" ? "bg-secondary-500" : app.currentStatus === "offer" ? "bg-success-500" : "bg-error-500"}
-                        ` }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-neutral-500 capitalize", children: app.currentStatus })
-                ] })
+            children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 min-w-0", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm font-medium text-neutral-900 truncate", children: [
+                app.position,
+                " at ",
+                app.company
               ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "ml-2 flex flex-col items-end text-sm", children: /* @__PURE__ */ jsxRuntimeExports.jsx("time", { className: "text-xs text-neutral-500", children: format(new Date(app.dateApplied), "MMM d, yyyy") }) })
-            ]
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mt-1", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `
+                        inline-block w-2 h-2 rounded-full 
+                        ${getStatusColor(app.currentStatus)}
+                      ` }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm text-neutral-500", children: format(new Date(app.dateApplied), "MMM d") })
+              ] })
+            ] })
           },
           app.id
         )) })
       ] })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white dark:bg-neutral-800 rounded-lg shadow p-6", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-xl font-semibold mb-4", children: "Application Insights" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-4 bg-neutral-50 dark:bg-neutral-700 rounded-lg", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mb-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { size: 16, className: "text-neutral-400" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm text-neutral-500", children: "Last 7 Days" })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(TrendingUp, { size: 16, className: "text-success-500" })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-2xl font-semibold", children: stats.last7Days })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-4 bg-neutral-50 dark:bg-neutral-700 rounded-lg", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mb-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Calendar, { size: 16, className: "text-neutral-400" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm text-neutral-500", children: "Last 30 Days" })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(TrendingDown, { size: 16, className: "text-red-500" })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-2xl font-semibold", children: stats.last30Days })
+        ] })
+      ] })
     ] })
   ] }) });
+};
+const getStatusColor = (status) => {
+  switch (status) {
+    case "applied":
+      return "bg-neutral-400";
+    case "screening":
+      return "bg-primary-500";
+    case "progress":
+      return "bg-secondary-500";
+    case "offer":
+      return "bg-success-500";
+    case "rejected":
+      return "bg-red-500";
+    case "withdrawn":
+      return "bg-red-400";
+    default:
+      return "bg-neutral-400";
+  }
 };
 const StatusBadge = ({ status, size = "md" }) => {
   const sizeClasses = {
@@ -31588,7 +31774,7 @@ const ApplicationItem = ({ application }) => {
       return dateString;
     }
   };
-  const getStatusColor = (status) => {
+  const getStatusColor2 = (status) => {
     switch (status) {
       case "screening":
         return "border-primary-200 bg-primary-50";
@@ -31609,7 +31795,7 @@ const ApplicationItem = ({ application }) => {
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        className: `bg-white dark:bg-neutral-800 rounded-lg border-2 border-solid border-gray-600 shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer p-4 ${getStatusColor(application.currentStatus)}`,
+        className: `bg-white dark:bg-neutral-800 rounded-lg border-2 border-solid border-gray-600 shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer p-4 ${getStatusColor2(application.currentStatus)}`,
         onClick: handleApplicationClick,
         children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-between items-start", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start justify-between mb-2", children: [
@@ -32286,7 +32472,7 @@ const ApplicationBoard = ({ applications, onAddApplication }) => {
       [title]: !prev[title]
     }));
   };
-  const getStatusColor = (status) => {
+  const getStatusColor2 = (status) => {
     switch (status) {
       case "applied":
         return "purple-500";
@@ -32357,7 +32543,7 @@ const ApplicationBoard = ({ applications, onAddApplication }) => {
                   /* @__PURE__ */ jsxRuntimeExports.jsx(
                     "div",
                     {
-                      className: `text-sm text-${getStatusColor(app.currentStatus)} font-medium`,
+                      className: `text-sm text-${getStatusColor2(app.currentStatus)} font-medium`,
                       children: app.currentStatus
                     }
                   )
@@ -32421,7 +32607,7 @@ const ApplicationBoard = ({ applications, onAddApplication }) => {
             const statusOption = statusOptions.find((option) => option.value === status);
             return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col h-full", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center mb-3", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `w-3 h-3 rounded-full bg-${getStatusColor(status)} mr-2` }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `w-3 h-3 rounded-full bg-${getStatusColor2(status)} mr-2` }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-medium", children: statusOption?.label }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "ml-1.5 text-sm text-neutral-500", children: [
                   "(",
@@ -32443,7 +32629,7 @@ const ApplicationBoard = ({ applications, onAddApplication }) => {
             const statusOption = statusOptions.find((option) => option.value === status);
             return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center mb-3", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `w-3 h-3 rounded-full bg-${getStatusColor(status)} mr-2` }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `w-3 h-3 rounded-full bg-${getStatusColor2(status)} mr-2` }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-medium", children: statusOption?.label }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "ml-1.5 text-sm text-neutral-500", children: [
                   "(",
@@ -32504,8 +32690,8 @@ const ApplicationBoard = ({ applications, onAddApplication }) => {
                         }
                       ),
                       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
-                        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `w-2 h-2 rounded-full bg-${getStatusColor(status)}` }),
-                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-${getStatusColor(status)}`, children: statusOption?.label })
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `w-2 h-2 rounded-full bg-${getStatusColor2(status)}` }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-${getStatusColor2(status)}`, children: statusOption?.label })
                       ] })
                     ]
                   },
