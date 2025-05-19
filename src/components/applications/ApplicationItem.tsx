@@ -15,13 +15,14 @@ import {
   Trash2
 } from 'lucide-react';
 import { useApplications } from '../../context/ApplicationContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface ApplicationItemProps {
   application: JobApplication;
 }
 
 const ApplicationItem: React.FC<ApplicationItemProps> = ({ application }) => {
+  const navigate = useNavigate();
   const { toggleFavorite, deleteApplication } = useApplications();
   const [showActions, setShowActions] = React.useState(false);
   
@@ -49,7 +50,7 @@ const ApplicationItem: React.FC<ApplicationItemProps> = ({ application }) => {
   };
 
   const handleApplicationClick = () => {
-    window.location.href = `/applications/${application.id}`;
+    navigate(`/applications/${application.id}`);
   };
 
   return (
