@@ -31790,7 +31790,7 @@ const ApplicationItem = ({ application }) => {
     }
   };
   const handleApplicationClick = () => {
-    navigate(`./applications/${application.id}`);
+    navigate(`/applications/${application.id}`);
   };
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative group", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -31864,7 +31864,7 @@ const ApplicationItem = ({ application }) => {
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
             Link,
             {
-              to: `./applications/${application.id}`,
+              to: `/applications/${application.id}`,
               className: "flex w-full items-center px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100",
               onClick: (e3) => e3.stopPropagation(),
               children: [
@@ -31876,7 +31876,7 @@ const ApplicationItem = ({ application }) => {
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
             Link,
             {
-              to: `./applications/${application.id}/edit`,
+              to: `/applications/${application.id}/edit`,
               className: "flex w-full items-center px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100",
               onClick: (e3) => e3.stopPropagation(),
               children: [
@@ -32534,7 +32534,7 @@ const ApplicationBoard = ({ applications, onAddApplication }) => {
               {
                 className: "px-3 py-2 hover:bg-neutral-100 cursor-pointer border-l-4 border-transparent hover:border-${getStatusColor(app.currentStatus)}",
                 onClick: () => {
-                  navigate(`./applications/${app.id}`);
+                  navigate(`/applications/${app.id}`);
                 },
                 children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-start", children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
