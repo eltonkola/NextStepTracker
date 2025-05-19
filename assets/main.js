@@ -31790,7 +31790,7 @@ const ApplicationItem = ({ application }) => {
     }
   };
   const handleApplicationClick = () => {
-    navigate(`/applications/${application.id}`);
+    navigate(`./applications/${application.id}`);
   };
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative group", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
